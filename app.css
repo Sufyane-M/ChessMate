@@ -146,7 +146,7 @@ sup {
 /* Embedded content
    ========================================================================== */
 /**
- * Remove the border on images inside links in IE 10.
+ * Remove the border on  inside links in IE 10.
  */
 img {
   border-style: none;
@@ -368,7 +368,7 @@ template {
 body {
   font-family: var(--body-font);
   color: var(--body-color);
-  /*background-image: url("https://images.unsplash.com/photo-1445251836269-d158eaa028a6?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&auto=format&fit=crop&w=1951&q=80");*/
+  /*background-image: url("https://.unsplash.com/photo-1445251836269-d158eaa028a6?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&auto=format&fit=crop&w=1951&q=80");*/
   /*background-image: url(https://images.unsplash.com/photo-1520045892732-304bc3ac5d8e?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&auto=format&fit=crop&w=1950&q=80);*/
   background-position: center;
   background-size: cover;
@@ -2593,7 +2593,7 @@ label:has(input[type=radio]:not(:checked)):hover {
   -webkit-box-pack: right;
       -ms-flex-pack: right;
           justify-content: right;
-  background-image: url("scr/images/design/umano-vs-robot.f32300.jpg");
+  background-image: url("./scr/images/design/umano-vs-robot.f32300.jpg");
   background-repeat: no-repeat;
   background-size: cover;
   opacity: 0.8;
@@ -2633,7 +2633,7 @@ input:checked ~ label .modalita-1 {
   -webkit-box-pack: right;
       -ms-flex-pack: right;
           justify-content: right;
-  background-image: url("scr/images/design/umano vs umano.7b3ba3.jpg");
+  background-image: url("./scr/images/design/umano vs umano.7b3ba3.jpg");
   background-repeat: no-repeat;
   background-size: cover;
   opacity: 0.8;
@@ -2669,7 +2669,7 @@ input:checked ~ label .modalita-1 {
   -webkit-box-pack: right;
       -ms-flex-pack: right;
           justify-content: right;
-  background-image: url("scr/images/design/Controllo vocale.c26a17.jpg");
+  background-image: url("./scr/images/design/Controllo vocale.c26a17.jpg");
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center;
