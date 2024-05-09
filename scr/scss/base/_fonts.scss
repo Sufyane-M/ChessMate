@@ -1,0 +1,26 @@
+/* ////////////////////////////////////////////////////
+ *	Fonts
+ * //////////////////////////////////////////////////// */
+
+/** Google Fonts
+ *  ⚠️ Don't use font @import, not working on Safari
+ *  https://stackoverflow.com/a/36884919/1252920
+--------------------------------------------------------- */
+
+// @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+
+/** Adobe Typekit
+--------------------------------------------------------- */
+
+//@import url("https://use.typekit.net/vvc8fkt.css");
+
+
+/** font-face() mixin
+--------------------------------------------------------- */
+
+@include font-face("DINPro", "../fonts/DINPro-Regular", normal, normal, woff ttf);
+//@include font-face("Mont", "../fonts/Montserrat-Regular", normal, normal, ttf);
+
+//@include font-face("gtw", "../fonts/GT-Walsheim/gt-walsheim-regular-oblique", normal, italic, eot woff2 woff ttf svg);
+//@include font-face("gtw", "../fonts/GT-Walsheim/gt-walsheim-bold", bold, normal, eot woff2 woff ttf svg);

@@ -1,0 +1,7 @@
+@import "variables";
+//@include font-face("Mont", "../fonts/Montserrat-Regular", normal, normal, ttf);
+
+h1 { 
+    color: $color-primary; 
+    font-size: $h1;
+}
