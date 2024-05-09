@@ -1,0 +1,422 @@
+/* ////////////////////////////////////////////////////
+ *	Variables
+ * //////////////////////////////////////////////////// */
+
+ $color-base: #111a46;
+
+ 
+/** SCSS Variables
+--------------------------------------------------------- 
+
+$bp-sm: 576;
+$bp-md: 768;
+$bp-lg: 992;
+$bp-xl: 1200;
+$bp-xxl: 1400;
+$bp-xxxl: 1600;
+
+//$bp-main: 'md';
+$bp-menu: $bp-lg;
+$bp-filters: $bp-md;
+$bp-parallax: $bp-lg;
+
+
+/** CSS Custom Properties
+--------------------------------------------------------- */
+
+:root {
+
+  /** Breakpoints
+   *  They're defined in _mixins.scss in "Media queries"
+   *  section.
+  --------------------------------------------------------- 
+
+  --bp-sm: #{$bp-sm};
+  --bp-md: #{$bp-md};
+  --bp-lg: #{$bp-lg};
+  --bp-xl: #{$bp-xl};
+  --bp-xxl: #{$bp-xxl};
+  --bp-xxxl: #{$bp-xxxl};
+
+  --bp-menu: #{$bp-menu};
+  --bp-parallax: #{$bp-parallax};
+
+
+  /** Color
+  --------------------------------------------------------- 
+
+  // Main colors
+  $main-colors: (
+          "base": #112a46,
+          "primary": #3da9fc,
+          "secondary": #90b4ce,
+          "tertiary": #ef4565,
+    //"accent": #f51111,
+  );
+  @each $color in $main-colors {
+    --color-#{nth($color, 1)}: #{nth($color, 2)};
+    --color-#{nth($color, 1)}-rgb: #{hexToRGB(nth($color, 2))};
+    --color-#{nth($color, 1)}-alpha: #{rgba(nth($color, 2), .8)};
+    --color-#{nth($color, 1)}-extra-alpha: #{rgba(nth($color, 2), .1)};
+    --color-#{nth($color, 1)}-muted: #{adjust-color(nth($color, 2), $lightness: +40%)};
+
+    --color-#{nth($color, 1)}-light: #{adjust-color(nth($color, 2), $lightness: +20%)};
+    --color-#{nth($color, 1)}-lighter: #{adjust-color(nth($color, 2), $lightness: +40%)};
+
+    --color-#{nth($color, 1)}-dark: #{adjust-color(nth($color, 2), $lightness: -5%)};
+    --color-#{nth($color, 1)}-darker: #{adjust-color(nth($color, 2), $lightness: -40%)};
+  }
+
+  // Selection background
+  //--color-selection: #{rgba( map-get($main-colors, 'secondary'), 0.99)};
+  --color-selection: #{adjust-color(map-get($main-colors, 'secondary'), $lightness: -3%)};
+
+  // Neutrals
+  --white: #fff;
+  $neutrals: (3 5 7 10 15 20 30 40 50 60 70 80 90);
+  @each $l in $neutrals {
+    --gray-#{$l}: #{adjust-color(#fff, $lightness: -$l * 1%)};
+  }
+  --black: #000;
+
+  // Feedback
+  --color-success: #88c459;
+  --color-error: #f5414f;
+  --color-warning: #ffd137;
+  $color-base: #112a46;
+
+  /** Fluid responsive ratio
+   *
+   *  Avoid breakpoint jumps. Acts from 20rem (320px) to --f-summit
+   *
+   *  Usage:
+   *  font-size: calc(var(--f-2) * 40);
+   *
+   *  References:
+   *  https://clearleft.com/posts/fluid-custom-properties
+   *  CSS Locks: https://blog.typekit.com/2016/08/17/flexible-typography-with-css-locks/
+   *  https://www.kelliekowalski.com/articles/the-myth-of-pixel-perfection
+  --------------------------------------------------------- 
+
+  --f-summit: 1920; // 👇 NB: change also the below media query
+
+  --f-screen: 100vw;
+
+  // Reassign CSS variable
+  // ⚠️ Not supported on IE11 with postcss-custom-properties
+  @include mquery(1920) {
+    --f-screen: calc(var(--f-summit) * 1px);
+  }
+  --f-foot: 1 / 16;
+  --f-hill: (var(--f-screen) - 20rem) / (var(--f-summit) / 16 - 20) + var(--f-foot) * 1rem;
+
+  // Gradients
+  --f-1-25: ((1.25 / 16 - var(--f-foot)) * var(--f-hill));
+  --f-1-5: ((1.5 / 16 - var(--f-foot)) * var(--f-hill));
+  --f-2: ((2 / 16 - var(--f-foot)) * var(--f-hill));
+  --f-3: ((3 / 16 - var(--f-foot)) * var(--f-hill));
+
+
+  /** Typography
+  --------------------------------------------------------- 
+
+  // Body font
+  --font-primary: 'Source Code Pro', monospace; // Varela, Marcellus, Adamina
+
+  // Heading font
+  --font-secondary: 'Source Code Pro', monospace;
+
+  // Gradient for body font-size
+  // For fluid responsive typography
+  // Font size at upper breakpoint (1200px) / Font size at lower breakpoint (320px)
+  --f-body-min-font-size: 13; // @320px
+  --f-body-max-font-size: 17; // @1920px
+  --f-body-gradient: (( (var(--f-body-max-font-size) / var(--f-body-min-font-size)) / 16 - var(--f-foot)) * var(--f-hill));
+
+  // 1. Font size
+  --body-font-size: calc(var(--f-body-gradient) * var(--f-body-min-font-size));
+
+  // -----
+  // ➡️ Case
+  // - All sizes relative to body font size
+  // - Mobile sizes depending by mobile-specific ratio
+  // - Desktop sizes depending by desktop-specific ratio
+
+  // Type scale ratio
+  // Multiplier used to generate the type scale values
+  // https://type-scale.com/
+  $text-scale-ratio-min: 1.185; // @320px
+  $text-scale-ratio-max: 1.333; // @1920px
+
+  --text-xxxxxl-font-size: #{text-ratio-fluid-size($text-scale-ratio-min, $text-scale-ratio-max, 7)};
+  --text-xxxxl-font-size: #{text-ratio-fluid-size($text-scale-ratio-min, $text-scale-ratio-max, 6)};
+  --text-xxxl-font-size: #{text-ratio-fluid-size($text-scale-ratio-min, $text-scale-ratio-max, 5)};
+  --text-xxl-font-size: #{text-ratio-fluid-size($text-scale-ratio-min, $text-scale-ratio-max, 4)};
+  --text-xl-font-size: #{text-ratio-fluid-size($text-scale-ratio-min, $text-scale-ratio-max, 3)};
+  --text-lg-font-size: #{text-ratio-fluid-size($text-scale-ratio-min, $text-scale-ratio-max, 2)};
+  --text-md-font-size: #{text-ratio-fluid-size($text-scale-ratio-min, $text-scale-ratio-max, 1)};
+  --text-sm-font-size: #{text-ratio-fluid-size($text-scale-ratio-min, $text-scale-ratio-max, 1, true)};
+  --text-xs-font-size: #{text-ratio-fluid-size($text-scale-ratio-min, $text-scale-ratio-max, 2, true)};
+  --text-xxs-font-size: #{text-ratio-fluid-size($text-scale-ratio-min, $text-scale-ratio-max, 3, true)};
+
+  // Assign font size to elements
+  --h1-font-size: var(--text-xxxxxl-font-size);
+  --h2-font-size: var(--text-xxxl-font-size);
+  --h3-font-size: var(--text-xxl-font-size);
+  --h4-font-size: var(--text-xl-font-size);
+  --h5-font-size: var(--text-lg-font-size);
+  --h6-font-size: var(--text-md-font-size);
+
+  --blockquote-font-size: var(--text-xxxl-font-size);
+
+
+  // 2. Line height
+  // Automatically scaling basing on actual font-size
+  --body-line-height: 1.5;
+  --heading-line-height: 1.2;
+
+  // Adjust line
+  --body-line-adjust: 0; //-0.6em;
+  --heading-line-adjust: 0; //-0.21em;
+
+  // 3. Font weight
+  --font-weight-normal: 400;
+  --font-weight-bold: 600;
+
+  --body-font-weight: var(--font-weight-normal);
+  --heading-font-weight: var(--font-weight-normal);
+
+  // 4. Colors
+  --heading-color: var(--color-base);
+  --body-color: var(--color-base);
+
+  --link-color: var(--color-primary);
+  --link-visited-color: var(--link-color);
+  --link-hover-color: var(--color-primary-light);
+  --link-focus-color: var(--link-hover-color);
+
+
+  /** Spacings
+   *
+   * Custom spacing values:
+   * What if you’re setting a margin on an element, and
+   * space-sm looks too small, while space-md is too big?
+   * ==> ie. margin-right: calc(var(--space-sm) * 1.1);
+  --------------------------------------------------------- 
+
+  // Space unit relative to current font-size
+  // --space-unit: 1em;
+
+  // Space unit relative to body font-size
+  // --space-unit: var(--body-font-size);
+
+  // Space unit with own gradient
+  --min-space: 25; // For 320px screen
+  --max-space: 50; // For upper breakpoint
+  --space-gradient: (((var(--max-space) / var(--min-space)) / 16 - var(--f-foot)) * var(--f-hill));
+  --space-unit: calc(var(--space-gradient) * var(--min-space));
+
+  // Spacing scale ratio
+  --space-scale-ratio: 1.700;
+
+  // Spaces
+  --space-md: calc(1 * var(--space-unit));
+
+  --space-sm: calc(var(--space-md) / var(--space-scale-ratio));
+  --space-xs: calc(var(--space-sm) / var(--space-scale-ratio));
+  --space-xxs: calc(var(--space-xs) / var(--space-scale-ratio));
+  //--space-xxxs: calc(var(--space-xxs) / var(--space-scale-ratio));
+
+  --space-lg: calc(var(--space-md) * var(--space-scale-ratio));
+  --space-xl: calc(var(--space-lg) * var(--space-scale-ratio));
+  --space-xxl: calc(var(--space-xl) * var(--space-scale-ratio));
+  --space-xxxl: calc(var(--space-xxl) * var(--space-scale-ratio));
+  //--space-xxxxl: calc(var(--space-xxxl) * var(--space-scale-ratio));
+
+
+  /** Containers
+  --------------------------------------------------------- 
+
+  --container-max-width: 82%; //1500px;
+  @include mquery(lg) {
+    --container-max-width: 85%; //1500px;
+  }
+
+  --container-max-width-lg: 82%; //1100px; //60em;
+  @include mquery(lg) {
+    --container-max-width-lg: 60%; //1100px; //60em;
+  }
+
+  --container-max-width-md: 82%;
+  @include mquery(lg) {
+    --container-max-width-md: 40%; //820px; //45em;
+  }
+
+  --container-max-width-sm: 40%;
+  @include mquery(lg) {
+    --container-max-width-sm: 30%; //570px; //32em;
+  }
+
+  --container-padding: 0; //7.5vw; //var(--space-md);
+  @include mquery(lg) {
+    --container-padding: 0; //2.5vw; //4em; //var(--space-lg);
+  }
+
+
+  /** Grids
+  --------------------------------------------------------- 
+
+  --grid-gap-horizontal: var(--space-xs);
+  --grid-gap-vertical: var(--space-sm);
+  --grid-column-width: calc((100% - 11 * var(--grid-gap-horizontal)) / 12);
+
+
+  /** Buttons
+  --------------------------------------------------------- 
+
+  --btn-font-family: var(--font-primary);
+  --btn-font-size: 0.7em; //var(--text-sm-font-size); //var(--body-font-size);
+  --btn-font-weight: var(--font-weight-normal);
+  --btn-padding-x: 4.5em; //var(--space-md); // or ie. 1em
+  --btn-padding-y: 2.5em; // var(--space-sm); // or ie. 0.8em
+  --btn-radius: 50%; //0.25em;
+
+  // Style variations
+  --btn-primary-bg-color: var(--color-primary);
+  --btn-primary-hover-color: var(--color-primary-alpha);
+  --btn-primary-active-color: var(--color-primary-extra-alpha);
+  --btn-primary-label-color: var(--white);
+
+  // Feedback
+  --btn-disabled-bg-color: var(--gray-10);
+  --btn-disabled-label-color: var(--gray-50);
+
+  // Size variations
+  --btn-font-size-sm: calc(var(--btn-font-size) - 0.2em);
+  --btn-font-size-lg: calc(var(--btn-font-size) + 0.2em);
+
+
+  /** Forms
+  --------------------------------------------------------- 
+
+  --form-control-font-family: var(--font-secondary);
+  --form-control-font-size: 1.8em;
+  --form-control-font-weight: var(--font-weight-normal);
+  --form-control-color: var(--color-base);
+  --form-control-padding-x: .75em; //var(--space-sm);
+  --form-control-padding-y: .35em; //.75em; //var(--space-sm);
+  --form-control-bg-color: transparent;
+  --form-control-placeholder-color: var(--color-base-muted);
+
+  --form-control-border-width: 1px;
+  --form-control-border-color: var(--color-base-muted);
+  --form-control-border-color-focus: var(--color-base);
+  --form-control-border-radius: 0; // var(--btn-radius);
+
+  --form-gap: 1.8em; //var(--space-md);
+  --form-disabled-opacity: 0.3;
+
+  --form-select-caret-bg-image: var(--icon-down);
+
+  --form-checkbox-size: 23px; //1.4em;
+  --form-checkbox-padding-start: 1.8em;
+  --form-checkbox-checked-bg-image: var(--icon-check);
+  --form-radio-checked-bg-image: var(--icon-radio);
+
+
+  /** Cards
+  --------------------------------------------------------- 
+
+  --card-space: var(--space-xxs);
+  --card-border-width: 1px;
+  --card-border-color: var(--color-primary);
+
+
+  /** Header
+  --------------------------------------------------------- 
+
+  --logo-height: #{fluid-size(44, 62)};
+
+  //--logo-height-min: 45; // For 320px screen
+  //--logo-height-max: 70; // For upper breakpoint
+  //--logo-height-gradient: (( (var(--logo-height-max) / var(--logo-height-min)) / 16 - var(--f-foot)) * var(--f-hill));
+  //--logo-height: calc(var(--logo-height-gradient) * var(--logo-height-min));
+  //
+  //--logo-height: var(--space-xxl); //calc(var(--f-2) * 27);
+
+  --header-padding: var(--space-sm);
+  --header-height: calc(var(--logo-height) + 2 * var(--header-padding)); // calc(var(--f-2) * 60);
+
+
+  /** Section
+  --------------------------------------------------------- 
+
+  --section-padding: var(--space-xxl);
+  --section-gap: var(--section-padding);
+  --section-border-color: var(--color-base-muted);
+
+
+  /** Accordion
+  --------------------------------------------------------- 
+
+  --accordion-transition: var(--transition-duration) var(--transition-easing);
+  --accordion-header-space-x: var(--space-sm);
+  --accordion-header-space-y: var(--space-sm);
+  --accordion-content-space: var(--accordion-header-space-y);
+  --accordion-btn-icon-bg-image: var(--icon-plus);
+
+
+  /** Icons
+  --------------------------------------------------------- 
+
+  --icon-plus: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1000' height='1000' viewBox='0 0 1000 1000'%3E%3Cpolygon points='470 837.66 530 837.66 530 554.92 812.74 554.92 812.74 494.92 530 494.92 530 212.18 470 212.18 470 494.92 187.26 494.92 187.26 554.92 470 554.92 470 837.66'/%3E%3C/svg%3E");
+  --icon-down: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1000' height='1000' viewBox='0 0 1000 1000'%3E%3Cpolygon points='508.77 638.86 217.24 347.33 174.82 389.76 508.77 723.71 842.73 389.76 800.3 347.33 508.77 638.86'/%3E%3C/svg%3E");
+  //--icon-check: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8.71569 15L4 10L5.27451 8.55263L8.71569 12.1053L15.7255 5L17 6.31579L8.71569 15Z' fill='white'/%3E%3C/svg%3E%0A");
+  --icon-check: url("data:image/svg+xml,%3Csvg width='74' height='74' viewBox='0 0 74 74' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M15 36L30.6522 52L60 22' stroke='black' stroke-width='3'/%3E%3C/svg%3E%0A");
+  --icon-radio: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'><circle r='2' fill='%23fff'/></svg>");
+
+
+  /** z-index
+  --------------------------------------------------------- 
+
+  --z-index-loading: 60;
+  --z-index-cursor: 50;
+  --z-index-cookie-bar: 40;
+  --z-index-modal: 30;
+  --z-index-nav: 25;
+  --z-index-header: 20;
+
+
+  /** Transition
+  --------------------------------------------------------- 
+
+  // Easings: https://easings.net/
+  // Cubic Bezier: https://cubic-bezier.com/#.22,1,.36,1
+  // cubic-bezier(.23,1,.32,1); // cubic-bezier(.9,0,.1,1);
+  //--transition-easing: cubic-bezier(0.25, 1, 0.5, 1); // easeOutQuart
+  --transition-easing: cubic-bezier(0.55, 0, 0.37, 1); //.6,0,.25,1
+  --transition-duration: 1s;
+
+
+  /** Misc
+  --------------------------------------------------------- */
+
+  --body-bg-color: var(--white);
+  --border-color: var(--gray-10);
+
+  --image-placeholder-bg-color: var(--color-secondary);
+
+  --menu-link-space: var(--space-sm);
+
+  --scrollbar-width: 0;
+  --size-0vw: 0vw;
+  --size-100vw: calc(100vw - var(--scrollbar-width) * 1px);
+  --size-container-margin-auto: calc(var(--size-100vw) / 2 - 50%); // For elements at 100% container
+
+  --filters-bp: #{$bp-filters};
+
+  --narrow-p-width: 20em;
+
+  --viewport-height: 100vh;
+
+}

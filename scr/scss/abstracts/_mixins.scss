@@ -1,0 +1,924 @@
+/* ////////////////////////////////////////////////
+ *  Mixins
+ * //////////////////////////////////////////////// */
+
+/**
+* Scrollbar styling
+* https://www.digitalocean.com/community/tutorials/css-scrollbars
+* https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Scrollbars
+*/
+
+@mixin styled-scrollbar() {
+
+  // Works on Firefox
+  // On Firefox macOS shows only if scrollbar set always visible
+  // https://stackoverflow.com/a/54101063
+  & {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-base-muted) rgba(0, 0, 0, 0.00);
+  }
+
+  // Works on Chrome, Edge, and Safari
+  &::-webkit-scrollbar {
+    width: 4px; //0.4em;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--color-base-muted);
+    border-radius: 20em;
+  }
+  &::-webkit-scrollbar-track {
+    background-color: rgba(0, 0, 0, 0.00);
+  }
+}
+
+
+/** Typography
+--------------------------------------------------------- */
+
+/**
+ * Fluid size based on specific ratios and depending by body font size
+ *
+ * @param $ratio-mobile
+ * @param $ratio-desktop
+ * @param $pow: multiplier
+ * @param $invert: if true reduce sizes instead of increase
+ */
+@function text-ratio-fluid-size($ratio-mobile, $ratio-desktop, $pow, $invert: false) {
+  // Alternative to pow() function (working with custom properties)
+  //@for $i from 1 through ($h - 1) {
+  //  $multiplier-mobile: calc(#{$multiplier-mobile} * #{$ratio-mobile});
+  //  $multiplier-desktop: calc(#{$multiplier-desktop} * #{$ratio-desktop});
+  //}
+
+  // Calc final size with ratios and pow passed
+  $ratio-mobile: pow($ratio-mobile, $pow);
+  $ratio-desktop: pow($ratio-desktop, $pow);
+
+  $min-size: null;
+  $max-size: null;
+  @if $invert == true {
+    // Reduce size
+    $min-size: calc(var(--f-body-min-font-size) / #{$ratio-mobile});
+    $max-size: calc(var(--f-body-max-font-size) / #{$ratio-desktop});
+  } @else {
+    // Increase size
+    $min-size: calc(var(--f-body-min-font-size) * #{$ratio-mobile});
+    $max-size: calc(var(--f-body-max-font-size) * #{$ratio-desktop});
+  }
+
+  // Return fluid font size
+  @return fluid-size($min-size, $max-size);
+}
+
+
+/**
+ * Font Face
+ * https://gist.github.com/jonathantneal/d0460e5c2d5d7f9bc5e6
+ *
+ * @usage @include font-face("Akkurat", "../fonts/Akkurat-Bold-Italic", bold, italic, eot woff2 woff ttf svg);
+ */
+
+@mixin font-face($name, $path, $weight: null, $style: null, $exts: eot woff2 woff ttf svg) {
+  $src: null;
+
+  $extmods: (
+          eot: "?",
+          svg: "#" + str-replace($name, " ", "_")
+  );
+
+  $formats: (
+          otf: "opentype",
+          ttf: "truetype"
+  );
+
+  @each $ext in $exts {
+    $extmod: if(map-has-key($extmods, $ext), $ext + map-get($extmods, $ext), $ext);
+    $format: if(map-has-key($formats, $ext), map-get($formats, $ext), $ext);
+    $src: append($src, url(quote($path + "." + $extmod)) format(quote($format)), comma);
+  }
+
+  @font-face {
+    font-family: quote($name);
+    font-weight: $weight;
+    font-style: $style;
+    font-display: swap;
+    src: $src;
+  }
+}
+
+
+/**
+ * Kerning
+ */
+@mixin kerning() {
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "kern";
+}
+
+
+/**
+ * Link with border-bottom underline
+ */
+@mixin link-with-border() {
+  position: relative;
+
+  // Underline
+  &:after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: -0.1em;
+    left: 0;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    border-bottom-color: inherit;
+  }
+}
+
+
+/**
+ * First letter spacing
+ */
+
+@mixin first-letter-spacing {
+  &:first-letter {
+    margin-left: var(--space-xxl); //calc(1.5rem + 6vw);
+  }
+}
+
+
+/**
+ * Reset lists default styles
+ * ❌ Deprecated: Added as global reset in reset.scss
+ */
+
+@mixin reset-list() {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+
+/**
+ * Reset outline
+ */
+
+@mixin reset-outline {
+  outline: 0;
+  box-shadow: none;
+}
+
+
+/** Colors
+--------------------------------------------------------- */
+
+/**
+ * Convert HEX color to RGB
+ * https://medium.com/techhive-io/how-to-use-css-variables-with-sass-mixins-671e1f6067b3
+ */
+
+@function hexToRGB($hex) {
+  @return red($hex), green($hex), blue($hex);
+}
+
+/**
+ * Define CSS variable for HSL color
+ * https://codyhouse.co/ds/docs/framework/mixins#colors
+ *
+ * @usage
+ * @include defineVariableColorHSL(--color-primary-dark, 220, 90%, 49%);
+ * @include defineVariableColorHSL(--color-primary, 220, 90%, 56%);
+ * @include defineVariableColorHSL(--color-primary-light, 220, 90%, 63%);
+ */
+@mixin defineVariableColorHSL($color, $hue, $saturation, $lightness) {
+  // #{$color}: unquote("hsl(#{$hue}, #{$saturation}, #{$lightness})");#{$color}-h: #{$hue};#{$color}-s: #{$saturation};#{$color}-l: #{$lightness};
+  #{$color}: unquote("hsl(#{$hue}, #{$saturation}, #{$lightness})");
+}
+
+
+/** Grid
+ *
+ * https://www.appfocused.com/blog/css-grid-flexbox-fallback/
+ * Fallback anlysis https://zellwk.com/blog/calendar-flexbox-fallback/
+ * https://www.ethangardner.com/articles/2020/02/20/transition-to-css-grid-layouts-with-a-solid-fallback-strategy/
+ * https://www.sitepoint.com/sass-multiple-arguments-lists-or-arglist/
+--------------------------------------------------------- */
+
+/**
+ * grid
+ * Build a grid using CSS grid fragment (fr) unit
+ * Fallback for IE11 using Flex: recreate the same columns schema
+ *
+ * @param $breakpoints
+ * @param $align-vertical
+ * @param $gap-horizontal
+ * @param $gap-vertical
+ *
+ * @usage
+  @include grid(
+    $breakpoints: [
+      ['',   [1]]
+      ['md', [1, 2]]
+      ['lg', [3, 7, 2]]
+      ['1350px', [3, 3, 2, 3]]
+    ],
+    $gap-horizontal: var(--space-xl),
+    $gap-vertical: var(--space-xxl),
+    $align-vertical: center,
+  );
+ */
+
+@mixin grid(
+  $breakpoints,
+  $align-vertical: null,
+  $gap-horizontal: var(--grid-gap-horizontal),
+  $gap-vertical: var(--grid-gap-vertical)) {
+
+  // Fallback: grid
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+
+  @if $align-vertical == center {
+    align-items: center;
+  }
+  @if $align-vertical == end {
+    align-items: flex-end;
+  }
+
+  // Fallback: gap
+  // @if $gap-vertical > 0 {
+  > * {
+    margin-bottom: $gap-vertical;
+  }
+  @supports (grid-area: auto) {
+    > * {
+      margin-bottom: 0;
+    }
+  }
+  // }
+
+  // Fallback: columns
+  @each $breakpoint in $breakpoints {
+    $columns: nth($breakpoint, 2);
+    $columnsSum: 0;
+    @each $column in $columns {
+      $columnsSum: $columnsSum + $column;
+    }
+
+    $columnsCount: length(nth($breakpoint, 2));
+    $i: 0;
+
+    @each $column in $columns {
+      $i: $i + 1;
+      > *:nth-child(#{$columnsCount}n + #{$i}) {
+        // xs
+        @if nth($breakpoint, 1) == '' {
+          flex-basis: calc((#{$column} / #{$columnsSum}) * 100% - #{$gap-horizontal} / 2);
+        }
+          // sm +
+        @else {
+          @include mquery(nth($breakpoint, 1)) {
+            flex-basis: calc((#{$column} / #{$columnsSum}) * 100% - #{$gap-horizontal} / 2);
+          }
+        }
+      }
+    }
+
+    // CSS grid: columns
+    @supports (grid-area: auto) {
+      $columnTemplate: '';
+      @each $column in nth($breakpoint, 2) {
+        $columnTemplate: $columnTemplate + ' ' + $column + 'fr';
+      }
+
+      // xs
+      @if nth($breakpoint, 1) == '' {
+        grid-template-columns: #{$columnTemplate};
+      }
+        // sm +
+      @else {
+        @include mquery(nth($breakpoint, 1)) {
+          grid-template-columns: #{$columnTemplate};
+        }
+      }
+    }
+
+  }
+
+  // CSS Grid
+  @supports (grid-area: auto) {
+    display: grid;
+
+    grid-column-gap: $gap-horizontal;
+    grid-row-gap: $gap-vertical;
+
+    @if $align-vertical == center {
+      align-items: center;
+    }
+    @if $align-vertical == end {
+      align-items: end;
+    }
+  }
+
+}
+
+/**
+ * gridAuto
+ * Build a grid using CSS grids auto column width
+ * Fallback for IE11 using Flex: recreate the columns schema passed by
+ *
+ * @param $fallback-breakpoints: number of columns per row for each breakpoint
+ * @param $fallback-justify-content: flex justify-content
+ *
+ * @param $repeat: auto-fit or auto-fill
+ * @param $cols-min-width: min column width
+ * @param $cols-max-width: max column width
+ * @param $gap-horizontal
+ * @param $gap-vertical
+ *
+ * @usage
+  @include gridAuto(
+    $repeat: auto-fill,
+    $cols-min-width: 320px,
+    $cols-max-width: 1fr,
+
+    $gap-horizontal: var(--space-xl),
+    $gap-vertical: var(--space-xxl),
+
+    $fallback-breakpoints: [
+      ['', 1],
+      ['sm', 2],
+      ['lg', 3],
+    ],
+    $fallback-justify-content: space-around
+  );
+ */
+
+@mixin gridAuto(
+  $fallback-breakpoints,
+  $fallback-justify-content,
+  $repeat: auto-fill,
+  $cols-min-width: 300px,
+  $cols-max-width: 1fr,
+  $gap-horizontal: var(--grid-gap-horizontal),
+  $gap-vertical: var(--grid-gap-vertical)) {
+
+  // Fallback: grid
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: $fallback-justify-content;
+
+  // Fallback: gap
+  // @if $gap-vertical > 0 {
+  > * {
+    margin-bottom: $gap-vertical;
+  }
+  @supports (grid-area: auto) {
+    > * {
+      margin-bottom: 0;
+    }
+  }
+  // }
+
+  // Fallback: columns width
+  @each $breakpoint in $fallback-breakpoints {
+
+    $columnsCount: nth($breakpoint, 2);
+    @for $i from 1 through $columnsCount {
+      > *:nth-child(#{$columnsCount}n + #{$i}) {
+        // xs
+        @if nth($breakpoint, 1) == '' {
+          flex-basis: calc(100% / #{nth($breakpoint, 2)} - #{$gap-horizontal} / 2);
+        }
+          // sm +
+        @else {
+          @include mquery(nth($breakpoint, 1)) {
+            flex-basis: calc(100% / #{nth($breakpoint, 2)} - #{$gap-horizontal} / 2);
+          }
+        }
+      }
+    }
+
+  }
+
+  // CSS grids
+  @supports (grid-area: auto) {
+    display: grid;
+
+    grid-column-gap: $gap-horizontal;
+    grid-row-gap: $gap-vertical;
+
+    grid-template-columns: 1fr;
+    @include mquery(sm) {
+      grid-template-columns: repeat(#{$repeat}, minmax(#{$cols-min-width}, #{$cols-max-width}));
+    }
+  }
+
+}
+
+
+/** Spacings
+--------------------------------------------------------- */
+
+/**
+ * Lobotomized owl
+ * aka * + *
+ *
+ * $space
+ * $element (css selector): element affected by spacing
+ * $reset-margin (bool): force margin to 0
+ */
+
+@mixin owl($space, $element: '*', $reset-margin: false) {
+  @if $reset-margin {
+    > #{$element} {
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+  }
+
+  > #{$element} + #{$element} {
+    margin-top: $space
+  }
+}
+
+/**
+ * Vertical spaced elements
+ */
+
+@mixin is-spaced($size: md) {
+  @include owl(var(--space-#{$size}), '*', false);
+}
+
+/**
+ * Horizontal spaced elements
+ */
+
+@mixin is-spaced-h($size: md) {
+  > *:not(:last-child) {
+    margin-right: var(--space-#{$size});
+  }
+}
+
+
+/** Carousels
+--------------------------------------------------------- */
+
+/**
+ * Calculate slide width based on columns to occupy
+ *
+ * $columns_number: number of columns slides have to cover
+ */
+@function carousel-slide-width($columns_number) {
+  // Calculation:
+  // (columns number * grid column width) + (grid gaps number * grid gap width)
+  @return calc((#{$columns_number} * var(--grid-column-width)) + ((#{$columns_number} - 1) * var(--grid-gap-horizontal)));
+}
+
+/**
+ * Set width of the slides and space between slide
+ */
+@mixin add-width-and-space-to-slide() {
+  // Set slides width
+  width: var(--carousel-slide-width);
+
+  // Set slides space between
+  &:not(:last-child) {
+    margin-right: var(--grid-gap-horizontal);
+  }
+}
+
+
+/** Math
+--------------------------------------------------------- */
+
+/**
+ * pow() - Raise number to the nth power
+ *
+ * @param {number} $base      The base number
+ * @param {number} $exponents The exponent to which to raise $base
+ *
+ * https://gist.github.com/hail2u/1964056
+ */
+
+@function pow($base, $exponents) {
+  $raised: 1;
+
+  @for $i from 1 through $exponents {
+    $raised: $raised * $base;
+  }
+
+  @return $raised;
+}
+
+
+/** Misc
+--------------------------------------------------------- */
+
+/**
+ * Fluid size
+ * @param $min-size
+ * @param $max-size
+ */
+@function fluid-size($min-size, $max-size) {
+
+  // Calc specific gradient to have specific-mobile AND desktop sizes
+  $gradient: calc(((#{$max-size} / #{$min-size}) / 16 - var(--f-foot)) * var(--f-hill));
+
+  // Return fluid font size
+  @return calc(#{$min-size} * #{$gradient});
+}
+
+/**
+ * Overlay
+ */
+@mixin overlay($opacity: 0.2, $bg-color: #000) {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba($bg-color, $opacity);
+}
+
+/**
+ * Full height
+ *
+ * https://css-tricks.com/the-trick-to-viewport-units-on-mobile/
+ * https://ferie.medium.com/detect-a-touch-device-with-only-css-9f8e30fa1134
+ * https://css-tricks.com/touch-devices-not-judged-size/
+ *
+ * [Future CSS4] Dynamic viewport units (currently not supported):
+ * https://www.bram.us/2021/07/08/the-large-small-and-dynamic-viewports/#dynamic-viewport
+ */
+
+@mixin full-height() {
+  // Desktop and fallback for browsers that do not support below techniques
+  height: 100vh;
+
+  // Mobile: all except iOS (Chrome + Safari)
+  // At least one input mechanism of the device includes a pointing device of limited accuracy
+  @media (any-pointer: coarse) {
+    height: calc(var(--vh, 1vh) * 100);
+    //background-color: red !important;
+  }
+
+  // Mobile: iOS (Chrome + Safari)
+  // Selectively only for iOS because this could negatively impact other browsers
+  @supports (-webkit-touch-callout: none) {
+    height: -webkit-fill-available;
+    //background-color: green !important;
+  }
+}
+
+/**
+ * Fill available height
+ * With CSS fix for 100vh in mobile WebKit
+ *
+ * @link https://allthingssmitty.com/2020/05/11/css-fix-for-100vh-in-mobile-webkit/
+ * @link https://github.com/postcss/postcss-100vh-fix
+ */
+
+@mixin height-fill-available($fallback: 100vh) {
+  height: $fallback;
+  @supports (-webkit-touch-callout: none) {
+    height: -webkit-fill-available;
+  }
+}
+
+@mixin min-height-fill-available($fallback: 100vh) {
+  min-height: $fallback;
+  @supports (-webkit-touch-callout: none) {
+    min-height: -webkit-fill-available;
+  }
+}
+
+/**
+ * Expand clickable area
+ * https://ishadeed.com/article/clickable-area/
+ * https://codepen.io/shadeed/pen/BXXjEg?editors=1100
+ */
+
+@mixin expand-area($offset: var(--space-sm)) {
+  z-index: 0;
+
+  &:after {
+    $offset: calc(-1 * #{$offset});
+
+    content: "";
+    position: absolute;
+    left: $offset;
+    top: $offset;
+    right: $offset;
+    bottom: $offset;
+    z-index: -1;
+    //background: var(--gray-10);
+  }
+}
+
+/**
+ * Media queries
+ * http://www.sitepoint.com/introduction-mobile-first-media-queries/
+ * https://css-tricks.com/media-queries-sass-3-2-and-codekit/
+ *
+ * Usage: @include media(sm) { width: 60%; }
+ */
+
+@mixin mquery($point) {
+  @if $point == sm {
+    @media (min-width: #{$bp-sm}px) {
+      @content;
+    }
+  } @else if $point == md {
+    @media (min-width: #{$bp-md}px) {
+      @content;
+    }
+  } @else if $point == lg {
+    @media (min-width: #{$bp-lg}px) {
+      @content;
+    }
+  } @else if $point == xl {
+    @media (min-width: #{$bp-xl}px) {
+      @content;
+    }
+  } @else if $point == xxl {
+    @media (min-width: #{$bp-xxl}px) {
+      @content;
+    }
+  } @else if $point == xxxl {
+    @media (min-width: #{$bp-xxxl}px) {
+      @content;
+    }
+  }
+    // > Custom breakpoint pixels
+  @else {
+    @media (min-width: #{$point}px) {
+      @content;
+    }
+  }
+}
+
+@mixin mquery-down($point) {
+  @if $point == sm {
+    @media (max-width: #{$bp-sm - 1}px) {
+      @content;
+    }
+  } @else if $point == md {
+    @media (max-width: #{$bp-md - 1}px) {
+      @content;
+    }
+  } @else if $point == lg {
+    @media (max-width: #{$bp-lg - 1}px) {
+      @content;
+    }
+  } @else if $point == xl {
+    @media (max-width: #{$bp-xl - 1}px) {
+      @content;
+    }
+  } @else if $point == xxl {
+    @media (max-width: #{$bp-xxl - 1}px) {
+      @content;
+    }
+  } @else if $point == xxxl {
+    @media (max-width: #{$bp-xxxl - 1}px) {
+      @content;
+    }
+  }
+    // > Custom breakpoint pixels
+  @else {
+    @media (max-width: #{$point - 1}px) {
+      @content;
+    }
+  }
+}
+
+
+/**
+ * Centering absolutelly
+ * It needs a "relative" parent
+ * https://css-tricks.com/snippets/sass/centering-mixin/
+ * http://goo.gl/YS3Unf
+ *
+ * Usage: @include centerer (true, false)
+ */
+
+@mixin centerer($horizontal: true, $vertical: true) {
+  position: absolute;
+
+  @if ($horizontal and $vertical) {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  } @else if ($horizontal) {
+    left: 50%;
+    transform: translate(-50%, 0);
+  } @else if ($vertical) {
+    top: 50%;
+    transform: translate(0, -50%);
+  }
+}
+
+
+/**
+ * Centering with table
+ */
+
+// Vertical align with table
+@mixin table() {
+  display: table;
+  width: 100%;
+  height: 100%;
+}
+
+@mixin table-cell($width: 100%) {
+  display: table-cell;
+  vertical-align: middle;
+  width: $width;
+}
+
+
+/**
+ * Split background color
+ */
+
+@mixin split-bg-color($color-1: purple, $color-2: pink, $split-percent: 50%) {
+
+  background: linear-gradient(
+                  to right,
+                  $color-1 0%, $color-1 $split-percent,
+                  $color-2 $split-percent, $color-2 100%
+  );
+
+}
+
+
+/**
+ * Vertical hint + icon
+ * ie: Scroll down
+ */
+
+@mixin vertical-hint {
+  display: flex;
+  align-items: center;
+
+  @include small();
+  letter-spacing: calc(0.1rem + 0.2vw);
+
+  // Vertical text
+  writing-mode: vertical-lr;
+  transform: rotate(180deg);
+
+  // Icon
+  i {
+    margin-bottom: $space-md;
+    font-size: 1.5rem;
+  }
+
+  // img {
+  //   margin-bottom: $space-md;
+  //   width: calc(1rem + 0.9vw);
+  //   height: auto;
+  // }
+
+}
+
+
+/*
+ * Video fullscreen as background
+ *
+ * Based on:
+ * https://www.w3schools.com/howto/howto_css_fullscreen_video.asp
+ * http://thenewcode.com/777/Create-Fullscreen-HTML5-Page-Background-Video
+ *
+ * Usage:
+ * @include video-fullscreen(
+ *   $cover: "false",
+ *   $bp: "md",
+ * );
+ *
+ * NB: if "$cover: true" => add "height: 100vh" to .hero
+ * NB: if "$cover: false" => remove "height: 100vh" from .hero and add "display: block;" (remove flex)
+ */
+
+@mixin video-fullscreen($cover: "true", $bp: "md") {
+
+  //
+  // Video fullscreen wrapper
+  //
+  .video-fullscreen {
+    // Placeholder image
+    // On small devices: placeholder image instead of <video>
+    // On bigger devices: placeholder image while video loads (1st video frame)
+    background-repeat: no-repeat;
+    background-position: center top;
+    background-size: cover;
+    background-color: $color-1;
+    // Image setted inline on HTML element
+    //background-image: url(https://dummyimage.com/1920x1080/4825f7/fff.jpg); //../images/Backgrounds/hero_bg_legno.jpg
+    @include mquery($bp) {
+      // Remove the placeholder image on bigger devices
+      //background: none;
+    }
+
+    @if $cover == "true" {
+
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 1;
+      overflow: hidden; // The <video> with "translate" property => overflo
+
+    } @else {
+
+      height: 100vh;
+      @include mquery($bp) {
+        height: auto;
+      }
+
+    }
+
+  }
+  // end .video-fullscreen
+
+
+  //
+  // Video <video>
+  //
+  .video-fullscreen__video {
+
+    // Hide <video> on small devices
+    // ==> Show background placeholder image on .video-fullscreen
+    display: none;
+
+    // Show <video> on bigger devices
+    @include mquery($bp) {
+      display: block;
+
+      @if $cover == "true" {
+
+        // Center video horizontally
+        @include centerer(true, true);
+        //top: 0; // Vertically at top
+
+        // Set video fullscreen
+        min-width: 100%;
+        min-height: 100%;
+        width: auto;
+        height: auto;
+
+      } @else {
+
+        width: 100%;
+
+      }
+
+    }
+    // end mquery
+
+  }
+  // end .video-fullscreen__video
+
+}
+
+// end @mixin
+
+
+/**
+ * Expand element outside its container
+ *
+ * This mixin will force an element to expand full width even if it has
+ * a container. See demo here: http://codepen.io/sebastianekstrom/pen/vNjOao/
+ *
+ * Usage:
+ *
+ *      img {
+ *          @include expand-full-width(16px)
+ *      }
+ */
+
+@mixin expand-full-width() {
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+}
+
+
+/**
+ * String replace
+ * Required for font-face() mixin
+ *
+ * @link https://gist.github.com/jonathantneal/d0460e5c2d5d7f9bc5e6
+ */
+
+@function str-replace($string, $search, $replace: "") {
+  $index: str-index($string, $search);
+
+  @if $index {
+    @return str-slice($string, 1, $index - 1) + $replace + str-replace(str-slice($string, $index + str-length($search)), $search, $replace);
+  }
+
+  @return $string;
+}
