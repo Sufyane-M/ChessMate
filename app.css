@@ -2593,7 +2593,7 @@ label:has(input[type=radio]:not(:checked)):hover {
   -webkit-box-pack: right;
       -ms-flex-pack: right;
           justify-content: right;
-  background-image: url("./scr/images/design/umano-vs-robot.f32300.jpg");
+  background-image: url("./scr/images/design/umano-vs-robot.jpg");
   background-repeat: no-repeat;
   background-size: cover;
   opacity: 0.8;
