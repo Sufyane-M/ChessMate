@@ -2593,7 +2593,7 @@ label:has(input[type=radio]:not(:checked)):hover {
   -webkit-box-pack: right;
       -ms-flex-pack: right;
           justify-content: right;
-  background-image: url("scr//design/umano-vs-robot.f32300.jpg");
+  background-image: url("scr/images/umano_vs_robot.jpg");
   background-repeat: no-repeat;
   background-size: cover;
   opacity: 0.8;
@@ -2633,7 +2633,7 @@ input:checked ~ label .modalita-1 {
   -webkit-box-pack: right;
       -ms-flex-pack: right;
           justify-content: right;
-  background-image: url("./scr/images/design/umano-vs-umano.7b3ba3.jpg");
+  background-image: url("scr/images/umano_vs_umano.jpg");
   background-repeat: no-repeat;
   background-size: cover;
   opacity: 0.8;
@@ -2669,7 +2669,7 @@ input:checked ~ label .modalita-1 {
   -webkit-box-pack: right;
       -ms-flex-pack: right;
           justify-content: right;
-  background-image: url("./scr/images/design/Controllo-vocale.c26a17.jpg");
+  background-image: url("scr/images/Controllo_vocale.jpg");
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center;
